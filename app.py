@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, make_response, flash, request, redirect, render_template
-import sys, os, train_model, predict_model
+import os
+import sys
 import urllib.request
+
+from flask import (Flask, flash, jsonify, make_response, redirect,
+                   render_template, request)
 from werkzeug.utils import secure_filename
+
+from scripts import predict_model, train_model
 
 app = Flask(__name__)
 
@@ -24,23 +29,7 @@ def get_experiments(user):
     else:
         file_dir_user = os.listdir('data/{}'.format(user))
         return jsonify({"user":user, "experiments":file_dir_user})
-    return render_template('upload.html')
 
-
-    user = user.lower()
-    experiment_name = experiment_name.lower()
-    
-    file_dir_data = os.listdir('data/')
-    if user not in file_dir_data:
-        return make_response(jsonify({'error':'User Not Found'}), 404)
-    
-    file_dir_user = os.listdir('data/{}'.format(user))
-    if experiment_name not in file_dir_user:
-        return make_response(jsonify({'error':'Experiment Not Found'}), 404)
-
-    model_def = 'data/{}/{}/model_definition.yaml'.format(user, experiment_name)
-    
-    return jsonify({"user":user, "response":task_id*5})
 
 @app.route('/api/v1.0/train/<user>/<experiment_name>', methods=['GET'])
 def train_experiment(user, experiment_name):
@@ -149,4 +138,4 @@ def not_found(error):
     return make_response(jsonify({'error':'Request Not Found'}), 404)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0',port='5001')
+    app.run(debug=True, host='0.0.0.0',port='5000')
