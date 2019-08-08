@@ -15,9 +15,12 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 
-from scripts import predict_model, train_model
+from scripts import predict_model
+from scripts import mongodb
+from scripts import train_model
 
 app = Flask(__name__)
+app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 
 ENVIRONMENT_WINDOWS = True
 
@@ -25,6 +28,11 @@ ENVIRONMENT_WINDOWS = True
 @app.route("/")
 def index():
     return "Application Alive"
+
+
+@app.route("/api/v1.0/users", methods=["GET"])
+def get_users():
+    return jsonify({"Users": mongodb.get_list_users()})
 
 
 @app.route("/api/v1.0/experiments/<user>", methods=["GET"])
@@ -182,6 +190,7 @@ def remove_experiment(user, experiment_name):
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({"error": "Request Not Found"}), 404)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port="5000")
