@@ -4,3 +4,4 @@ requests
 pymongo
 flask_testing
 bcrypt
+dnspython
